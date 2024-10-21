@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -11,7 +9,7 @@ class AuthService {
           email: email, password: password);
       return cred.user;
     } catch (e) {
-      print("Đã xảy ra sự cố");
+      print("Đăng ký thất bại");
     }
     return null;
   }
@@ -22,7 +20,7 @@ class AuthService {
           email: email, password: password);
       return cred.user;
     } catch (e) {
-      print("Đã xảy ra sự cố");
+      print("Đăng nhập thất bại");
     }
     return null;
   }

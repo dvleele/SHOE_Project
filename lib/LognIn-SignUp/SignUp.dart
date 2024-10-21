@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:shoe_project/LognIn-SignUp/Service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -27,6 +26,89 @@ class _SignUpState extends State<SignUp> {
     _email.dispose();
     _password.dispose();
     super.dispose();
+  }
+
+  void _signUp() async {
+    User? user = await _auth.createUserWithEmailAndPassword(
+      _email.text,
+      _password.text,
+    );
+
+    if (user != null) {
+      _signUpThanhCong();
+    } else {
+      _signUpThatbai();
+    }
+  }
+
+  void _signUpThanhCong() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          content: Container(
+            height: 100,
+            child: Center(
+              child: Text(
+                "Đăng kí thành công",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _signUpThatbai() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.white,
+          content: Container(
+            height: 100,
+            child: Center(
+              child: Text(
+                "Tài khoản đã tồn tại ! \nHãy thử lại",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -121,14 +203,5 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
-  }
-  _signUp() async {
-    final user = await _auth.createUserWithEmailAndPassword(_email.text, _password.text);
-    if (user != null){
-      print("Đăng kí thành công");
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
-      print("Đăng kí thất bại");
-    }
   }
 }
