@@ -1,12 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:shoe_project/LognIn-SignUp/LognIn.dart';
+import 'package:shoe_project/Admin/LoginAdmin.dart';
+import 'package:shoe_project/User/LognIn-SignUp/LognIn.dart';
 
 Future main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(Shoe());
+  runApp(const Shoe());
 }
 
 
@@ -33,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(Duration(seconds: 3), () {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => LognIn()),

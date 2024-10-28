@@ -1,55 +1,53 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:shoe_project/HomePage.dart';
-import 'package:shoe_project/LognIn-SignUp/SignUp.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shoe_project/Admin/AdminHomePage.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: LognIn(),
-  ));
-}
+class Loginadmin extends StatefulWidget {
+  const Loginadmin({super.key});
 
-class LognIn extends StatefulWidget {
   @override
-  _LognInState createState() => _LognInState();
+  State<Loginadmin> createState() => _LoginadminState();
 }
 
-class _LognInState extends State<LognIn> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+class _LoginadminState extends State<Loginadmin> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  TextEditingController admincontroller = TextEditingController();
+  TextEditingController adminpasswordcontroller = TextEditingController();
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  void _lognIn() async {
+  void Loginadmin() async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
+      // Truy vấn Firestore để lấy tài khoản và mật khẩu
+      var snapshot = await FirebaseFirestore.instance
+          .collection('admin')
+          .doc('NrkOYuHMa0pBvi0ea0Wg') // Sử dụng ID của fireStore
+          .get();
 
-      User? user = userCredential.user;
+      // Kiểm tra tài liệu có tồn tại
+      if (snapshot.exists) {
+        var data = snapshot.data();
+        String storedUsername = data?['id'];
+        String storedPassword = data?['password'];
 
-      if (user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Homepage()),
-        );
+        // So sánh với thông tin người dùng nhập vào
+        if (storedUsername == admincontroller.text &&
+            storedPassword == adminpasswordcontroller.text) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Adminhomepage()),
+          );
+        } else {
+          ThatBai();
+        }
       } else {
-        _logninThatBai();
+        ThatBai();
       }
-    } catch (e) {
-      _logninThatBai();
+    } catch (e) { // lỗi này bao gom tất ca
+      ThatBai();
     }
   }
 
-  void _logninThatBai() {
+  void ThatBai() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -90,21 +88,30 @@ class _LognInState extends State<LognIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xffE4E2DD),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(
-                'assets/images/logo.png',
-                height: 150,
+              Text(
+                'Admin', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
-              SizedBox(height: 10),
-              TextField(
-                controller: _emailController,
+              SizedBox(height: 30),
+              TextFormField(
+                controller: admincontroller,
                 decoration: InputDecoration(
-                  hintText: ' Login Email',
+                  hintText: ' Username',
                   hintStyle: TextStyle(color: Colors.grey),
                   fillColor: Color(0xffCCCCCC),
                   filled: true,
@@ -115,8 +122,8 @@ class _LognInState extends State<LognIn> {
                 ),
               ),
               SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
+              TextFormField(
+                controller: adminpasswordcontroller,
                 obscureText: true,
                 decoration: InputDecoration(
                   hintText: ' Password',
@@ -129,20 +136,11 @@ class _LognInState extends State<LognIn> {
                   ),
                 ),
               ),
-              SizedBox(height: 5),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'Forgot password?',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
-              ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _lognIn,
+                onPressed: () {
+                  Loginadmin();
+                },
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   shape: RoundedRectangleBorder(
@@ -152,33 +150,13 @@ class _LognInState extends State<LognIn> {
                 ),
                 child: Center(
                   child: Text(
-                    'LOG IN',
+                    'LOGN IN',
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-              ),
-              SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Don't have account?",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp()),
-                      );
-                    },
-                    child: Text(
-                      'Sign Up',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
@@ -187,5 +165,3 @@ class _LognInState extends State<LognIn> {
     );
   }
 }
-
-
